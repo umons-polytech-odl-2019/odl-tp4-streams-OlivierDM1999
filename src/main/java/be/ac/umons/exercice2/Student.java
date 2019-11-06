@@ -1,7 +1,7 @@
 package be.ac.umons.exercice2;
 
 import java.util.*;
-
+import java.util.stream.Collectors;
 import static java.util.Objects.requireNonNull;
 
 public class Student {
@@ -29,18 +29,23 @@ public class Student {
 
     public double averageScore() {
 
-        int count = 0;
+        /**int count = 0;
         double totalScore = 0.0;
+
+
+
         for (Integer score : scoreByCourse.values()) {
             count++;
             totalScore += score;
         }
-        return totalScore / count;
+        return totalScore / count;**/
+
+        return scoreByCourse.values().stream().mapToInt(Integer::intValue).average().orElse(0.0);
     }
 
     public String bestCourse() {
 
-        String bestCourse = "";
+        /**String bestCourse = "";
         Integer bestScore = 0;
 
         for (Map.Entry<String, Integer> e : scoreByCourse.entrySet()) {
@@ -48,25 +53,30 @@ public class Student {
                 bestCourse = e.getKey();
                 bestScore = e.getValue();
             }
-        }
+        }**/
 
-        return bestCourse;
+        return scoreByCourse.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).findFirst().map(Map.Entry::getKey).toString();
+            //tri décroissant
+            //on retourne le premier élément
+        // entrySet créée un set avec les mêmes éléments que le hashmap
     }
 
     public int bestScore() {
+        /**
 
         int bestScore = 0;
         for (Map.Entry<String, Integer> entry : scoreByCourse.entrySet()) {
             if (entry.getValue() > bestScore)
                 bestScore = entry.getValue();
         }
-        return bestScore;
+        return bestScore;**/
+        return scoreByCourse.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).findFirst().map(Map.Entry::getValue).orElse(0);
 
     }
 
     public Set<String> failedCourses() {
 
-        List<Map.Entry<String, Integer>> filteredEntries = new ArrayList<>();
+        /**List<Map.Entry<String, Integer>> filteredEntries = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : scoreByCourse.entrySet()) {
             if (entry.getValue() < 12) {
                 filteredEntries.add(entry);
@@ -77,7 +87,10 @@ public class Student {
         for (Map.Entry<String, Integer> entry : filteredEntries) {
             failedCourses.add(entry.getKey());
         }
-        return failedCourses;
+        return failedCourses;**/
+        return scoreByCourse.entrySet().stream().filter(entry->entry.getValue()<10).map(Map.Entry::getKey).collect(Collectors.toCollection(HashSet::new));
+
+
     }
 
     public boolean isSuccessful() {

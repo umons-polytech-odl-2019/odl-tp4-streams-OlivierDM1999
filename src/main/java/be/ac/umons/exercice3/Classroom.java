@@ -22,7 +22,7 @@ public class Classroom {
 
     public double averageScore() {
 
-        double sum = 0;
+        /**double sum = 0;
         int cpt = 0;
         for (Student student : students) {
             for (Map.Entry<String, Integer> courses : student.getScoreByCourse().entrySet()) {
@@ -30,7 +30,11 @@ public class Classroom {
                 cpt++;
             }
         }
-        return (sum / cpt);
+        return (sum / cpt);**/
+        return students.stream()
+                .flatMapToInt(student->student.getScoreByCourse().values().stream().mapToInt(Integer::intValue))/**On rajoute un flat parce qu'on a un stream à l'intérieur de la (**/
+                .average()
+                .orElse(0.0)/**Permet de retourner une valeur par défaut**/;
     }
 
     public int countStudents() {
@@ -49,7 +53,9 @@ public class Classroom {
             .collect(Collectors.toList());
     }
 
-    public List<Student> successfulStudents() {
+    public List<Student> successfulStudents()
+    {
+        /**
 
         Set<Student> studentSet = new TreeSet<>(
                 Comparator.comparingDouble(student -> -student.averageScore()));
@@ -63,7 +69,13 @@ public class Classroom {
         List<Student> studentList = new ArrayList<>();
         for (Student s : studentSet)
             studentList.add(s);
-        return studentList;
+        return studentList;**/
+
+        return students.stream()
+                .filter(Student::isSuccessful)//garder que les éléments répondant à ce qui a été défini dans la méthode isSuccessful
+                .sorted(Comparator.comparingDouble(student->-student.averageScore()))//- pour trier dans l'ordre inverse (c'est pcq qu'on a des nombres),on fait correspondre à chaque étudiant sa moyenne
+                .collect(Collectors.toList());//transforme ton flux en list, on doit retourner une list
+
 
     }
 }
